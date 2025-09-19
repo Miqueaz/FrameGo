@@ -1,9 +1,10 @@
 package base_service
 
 import (
-	helpers "main/pkg/base/helpers"
-	models "main/pkg/base/models"
 	"reflect"
+
+	helpers "github.com/miqueaz/GoRestAPI/pkg/base/helpers"
+	models "github.com/miqueaz/GoRestAPI/pkg/base/models"
 )
 
 // Crear un nuevo controlador con métodos personalizados

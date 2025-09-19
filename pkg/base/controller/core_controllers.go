@@ -1,8 +1,9 @@
 package base_controller
 
 import (
-	base_service "main/pkg/base/service"
 	"sync"
+
+	base_service "github.com/miqueaz/GoRestAPI/pkg/base/service"
 
 	"github.com/gin-gonic/gin"
 )

@@ -1,8 +1,8 @@
 package base_controller
 
 import (
-	helpers "main/pkg/base/helpers"
-	base_service "main/pkg/base/service"
+	helpers "github.com/miqueaz/GoRestAPI/pkg/base/helpers"
+	base_service "github.com/miqueaz/GoRestAPI/pkg/base/service"
 )
 
 // Crear un nuevo controlador

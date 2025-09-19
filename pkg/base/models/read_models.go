@@ -2,7 +2,8 @@ package base_models
 
 import (
 	"log"
-	helpers "main/pkg/base/helpers"
+
+	helpers "github.com/miqueaz/GoRestAPI/pkg/base/helpers"
 )
 
 // Obtener un modelo usando type assertion

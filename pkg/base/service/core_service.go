@@ -1,9 +1,10 @@
 package base_service
 
 import (
-	"main/pkg/base/hooks"
-	models "main/pkg/base/models"
 	"sync"
+
+	"github.com/miqueaz/GoRestAPI/pkg/base/hooks"
+	models "github.com/miqueaz/GoRestAPI/pkg/base/models"
 )
 
 // Controller agrupa un modelo con sus métodos

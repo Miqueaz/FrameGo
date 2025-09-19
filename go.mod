@@ -1,4 +1,4 @@
-module main
+module github.com/miqueaz/GoRestAPI
 
 go 1.24.3
 

@@ -2,8 +2,9 @@ package router
 
 import (
 	"errors"
-	base_controller "main/pkg/base/controller"
-	"main/pkg/client"
+
+	base_controller "github.com/miqueaz/GoRestAPI/pkg/base/controller"
+	"github.com/miqueaz/GoRestAPI/pkg/client"
 
 	"github.com/gin-gonic/gin"
 )

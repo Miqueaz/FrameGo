@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"main/pkg/client"
 	"reflect"
 	"strconv"
+
+	"github.com/miqueaz/GoRestAPI/pkg/client"
 
 	"github.com/gin-gonic/gin"
 )

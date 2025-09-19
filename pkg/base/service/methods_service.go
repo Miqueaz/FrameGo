@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	base_helpers "main/pkg/base/helpers"
 	"reflect"
 	"strconv"
+
+	base_helpers "github.com/miqueaz/GoRestAPI/pkg/base/helpers"
 )
 
 // Método Read con soporte de hooks

@@ -1,8 +1,9 @@
 package base_models
 
 import (
-	ORM "main/pkg/sql"
 	"sync"
+
+	ORM "github.com/miqueaz/GoRestAPI/pkg/sql"
 )
 
 // Modelo genérico

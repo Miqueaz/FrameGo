@@ -1,17 +1,20 @@
 package base_models
 
 import (
+	"database/sql"
 	"log"
-	"main/connection/db/postgres"
-	helpers "main/pkg/base/helpers"
-	ORM "main/pkg/sql"
+
+	helpers "github.com/miqueaz/GoRestAPI/pkg/base/helpers"
+	ORM "github.com/miqueaz/GoRestAPI/pkg/sql"
 
 	"github.com/jmoiron/sqlx"
 )
 
+var DB *sql.DB
+
 // Crear un nuevo modelo y guardarlo
 func NewModel[T any](name string, collectionName string, id ...int) *Model[T] {
-	db := sqlx.NewDb(postgres.DB, "postgres")
+	db := sqlx.NewDb(DB, "postgres")
 	var idInt int
 	if len(id) > 0 {
 		idInt = id[0]
@@ -31,6 +34,10 @@ func NewModel[T any](name string, collectionName string, id ...int) *Model[T] {
 	}
 
 	return nil
+}
+
+func SetGlobalDB(db *sql.DB) {
+	DB = db
 }
 
 func (m *Model[T]) SetDB(db *sqlx.DB) {
