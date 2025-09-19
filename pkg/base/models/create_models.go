@@ -1,0 +1,48 @@
+package base_models
+
+import (
+	"log"
+	"main/connection/db/postgres"
+	helpers "main/pkg/base/helpers"
+	ORM "main/pkg/sql"
+
+	"github.com/jmoiron/sqlx"
+)
+
+// Crear un nuevo modelo y guardarlo
+func NewModel[T any](name string, collectionName string, id ...int) *Model[T] {
+	db := sqlx.NewDb(postgres.DB, "postgres")
+	var idInt int
+	if len(id) > 0 {
+		idInt = id[0]
+	}
+	model := &Model[T]{
+		ID:             idInt,
+		Name:           name,
+		CollectionName: collectionName,
+		Structure:      *new(T),
+		QueryBuilder:   ORM.NewQueryBuilder[T](db, collectionName),
+	}
+	helpers.SaveStructure(model, &models)
+
+	if m, ok := helpers.LoadStructure[Model[T]](&models); ok {
+		log.Printf("Modelo '%s' creado y almacenado con éxito.\n", m.Name)
+		return model
+	}
+
+	return nil
+}
+
+func (m *Model[T]) SetDB(db *sqlx.DB) {
+	m.QueryBuilder = ORM.NewQueryBuilder[T](db, m.CollectionName)
+}
+
+func SetDB(db *sqlx.DB) {
+	models.Range(func(_, value any) bool {
+		if model, ok := value.(interface{ SetDB(*sqlx.DB) }); ok {
+			model.SetDB(db)
+		}
+		return true
+	})
+	log.Println("Base de datos configurada para todos los modelos.")
+}
