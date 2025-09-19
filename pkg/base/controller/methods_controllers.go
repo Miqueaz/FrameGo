@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/miqueaz/GoRestAPI/pkg/client"
+	"github.com/miqueaz/FrameGo/pkg/client"
 
 	"github.com/gin-gonic/gin"
 )

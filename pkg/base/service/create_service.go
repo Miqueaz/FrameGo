@@ -3,8 +3,8 @@ package base_service
 import (
 	"reflect"
 
-	helpers "github.com/miqueaz/GoRestAPI/pkg/base/helpers"
-	models "github.com/miqueaz/GoRestAPI/pkg/base/models"
+	helpers "github.com/miqueaz/FrameGo/pkg/base/helpers"
+	models "github.com/miqueaz/FrameGo/pkg/base/models"
 )
 
 // Crear un nuevo controlador con métodos personalizados

@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"strconv"
 
-	base_helpers "github.com/miqueaz/GoRestAPI/pkg/base/helpers"
+	base_helpers "github.com/miqueaz/FrameGo/pkg/base/helpers"
 )
 
 // Método Read con soporte de hooks

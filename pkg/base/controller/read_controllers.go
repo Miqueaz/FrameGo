@@ -1,7 +1,7 @@
 package base_controller
 
 import (
-	helpers "github.com/miqueaz/GoRestAPI/pkg/base/helpers"
+	helpers "github.com/miqueaz/FrameGo/pkg/base/helpers"
 )
 
 // Obtener un modelo usando type assertion

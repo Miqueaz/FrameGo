@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"log"
 
-	helpers "github.com/miqueaz/GoRestAPI/pkg/base/helpers"
-	ORM "github.com/miqueaz/GoRestAPI/pkg/sql"
+	helpers "github.com/miqueaz/FrameGo/pkg/base/helpers"
+	ORM "github.com/miqueaz/FrameGo/pkg/sql"
 
 	"github.com/jmoiron/sqlx"
 )

@@ -3,8 +3,8 @@ package router
 import (
 	"errors"
 
-	base_controller "github.com/miqueaz/GoRestAPI/pkg/base/controller"
-	"github.com/miqueaz/GoRestAPI/pkg/client"
+	base_controller "github.com/miqueaz/FrameGo/pkg/base/controller"
+	"github.com/miqueaz/FrameGo/pkg/client"
 
 	"github.com/gin-gonic/gin"
 )

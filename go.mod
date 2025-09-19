@@ -1,4 +1,4 @@
-module github.com/miqueaz/GoRestAPI
+module github.com/miqueaz/FrameGo
 
 go 1.24.3
 

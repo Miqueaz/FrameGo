@@ -3,7 +3,7 @@ package base_models
 import (
 	"sync"
 
-	ORM "github.com/miqueaz/GoRestAPI/pkg/sql"
+	ORM "github.com/miqueaz/FrameGo/pkg/sql"
 )
 
 // Modelo genérico

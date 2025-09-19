@@ -3,8 +3,8 @@ package base_service
 import (
 	"sync"
 
-	"github.com/miqueaz/GoRestAPI/pkg/base/hooks"
-	models "github.com/miqueaz/GoRestAPI/pkg/base/models"
+	"github.com/miqueaz/FrameGo/pkg/base/hooks"
+	models "github.com/miqueaz/FrameGo/pkg/base/models"
 )
 
 // Controller agrupa un modelo con sus métodos

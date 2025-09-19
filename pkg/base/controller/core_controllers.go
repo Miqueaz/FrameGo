@@ -3,7 +3,7 @@ package base_controller
 import (
 	"sync"
 
-	base_service "github.com/miqueaz/GoRestAPI/pkg/base/service"
+	base_service "github.com/miqueaz/FrameGo/pkg/base/service"
 
 	"github.com/gin-gonic/gin"
 )
