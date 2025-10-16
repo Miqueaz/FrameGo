@@ -26,7 +26,14 @@ func (qb *Read[T]) Exec(ctx context.Context) ([]T, error) {
 	var whereClauses []string
 
 	for i, cond := range qb.conditions {
-		whereClauses = append(whereClauses, fmt.Sprintf("%s %s $%d", cond.Field, cond.Op, i+1))
+		var placeholder string
+		if qb.db.DriverName() == "postgres" {
+			placeholder = fmt.Sprintf("$%d", i+1)
+		} else { // mysql/mariadb
+			placeholder = "?"
+		}
+
+		whereClauses = append(whereClauses, fmt.Sprintf("%s %s %s", cond.Field, cond.Op, placeholder))
 		args = append(args, cond.Val)
 	}
 
@@ -44,19 +51,19 @@ func (qb *Read[T]) Exec(ctx context.Context) ([]T, error) {
 		query += fmt.Sprintf(" OFFSET %d", qb.offset)
 	}
 
-	//Imprimir el query
+	// Imprimir el query
 	println("Executing query:", query)
 
 	var results []T
 	err := qb.db.SelectContext(ctx, &results, query, args...)
 	if err != nil {
-		println("Error executing query:", err)
+		println("Error executing query:", err.Error())
 		return nil, err
 	}
 
 	qb.conditions = nil // Clear conditions after execution
 
-	return results, err
+	return results, nil
 }
 
 // buildWhere builds the WHERE clause and args
