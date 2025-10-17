@@ -79,3 +79,12 @@ func (qb *QueryBuilder[T]) buildWhere() (string, []interface{}) {
 	}
 	return " WHERE " + strings.Join(parts, " AND "), args
 }
+
+func (qb *QueryBuilder[T]) Query(query string, params ...any) ([]T, error) {
+	var results []T
+	err := qb.db.Select(&results, query, params...)
+	if err != nil {
+		return nil, err
+	}
+	return results, nil
+}

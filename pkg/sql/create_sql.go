@@ -32,12 +32,13 @@ func InitPostgres(connection Connection) (*sql.DB, error) {
 
 func InitMySQL(connection Connection) (*sql.DB, error) {
 	var err error
-	connStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
+	connStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?tls=%s",
 		connection.User,
 		connection.Password,
 		connection.Host,
 		connection.Port,
 		connection.Database,
+		connection.SSLMode,
 	)
 
 	DB, err := sql.Open("mysql", connStr)
