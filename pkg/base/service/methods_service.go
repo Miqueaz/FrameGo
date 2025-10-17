@@ -24,6 +24,7 @@ func (s *Service[T]) Read(filter map[string]any) ([]T, error) {
 	filtros := base_helpers.NormalizarFiltros(filter)
 
 	qb := s.Model.Find
+	// qb.OrderBy("ID DESC")
 	for campo, cond := range filtros {
 		for i := 0; i < len(cond); i += 2 {
 			op := fmt.Sprintf("%v", cond[i])
