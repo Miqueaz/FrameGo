@@ -12,6 +12,7 @@ type Model[T any] struct {
 	Name           string
 	CollectionName string
 	Structure      T
+	dbName         string
 	ORM.QueryBuilder[T]
 }
 

@@ -14,7 +14,6 @@ var DB *sql.DB
 
 // Crear un nuevo modelo y guardarlo
 func NewModel[T any](name string, collectionName string, id ...int) *Model[T] {
-	db := sqlx.NewDb(DB, "postgres")
 	var idInt int
 	if len(id) > 0 {
 		idInt = id[0]
@@ -24,7 +23,6 @@ func NewModel[T any](name string, collectionName string, id ...int) *Model[T] {
 		Name:           name,
 		CollectionName: collectionName,
 		Structure:      *new(T),
-		QueryBuilder:   ORM.NewQueryBuilder[T](db, collectionName),
 	}
 	helpers.SaveStructure(model, &models)
 
@@ -34,10 +32,6 @@ func NewModel[T any](name string, collectionName string, id ...int) *Model[T] {
 	}
 
 	return nil
-}
-
-func SetGlobalDB(db *sql.DB) {
-	DB = db
 }
 
 func (m *Model[T]) SetDB(db *sqlx.DB) {

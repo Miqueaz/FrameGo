@@ -57,6 +57,7 @@ func (qb *Read[T]) Exec(ctx context.Context) ([]T, error) {
 	var results []T
 	err := qb.db.SelectContext(ctx, &results, query, args...)
 	if err != nil {
+		qb.conditions = nil
 		println("Error executing query:", err.Error())
 		return nil, err
 	}
