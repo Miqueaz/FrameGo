@@ -17,7 +17,7 @@ func (qb *QueryBuilder[T]) Delete(ctx context.Context) (sql.Result, error) {
 }
 
 // DeleteByID deletes a record by its `id` field
-func (qb *QueryBuilder[T]) DeleteByID(ctx context.Context, id int) (sql.Result, error) {
-	qb.conditions = []condition{{Field: "id", Op: "=", Val: id}}
+func (qb *QueryBuilder[T]) DeleteByID(ctx context.Context, id int, field string) (sql.Result, error) {
+	qb.conditions = []condition{{Field: field, Op: "=", Val: id}}
 	return qb.Delete(ctx)
 }

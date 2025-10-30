@@ -62,13 +62,32 @@ func (s *Service[T]) Insert(data T) (T, error) {
 func (s *Service[T]) Update(idStr string, data T) (T, error) {
 	id, err := strconv.Atoi(idStr)
 	fmt.Printf("Actualizando datos de la colección '%s' con el filtro: %v y los datos: %v\n", id, data)
-	// return db.UpdateDocument(filter, data, b.Model.CollectionName) // Implementación real de actualización
-	_, err = s.Model.UpdateByID(context.Background(), id, data)
-	// Agregar a la data el ID actualizado con un set
-	v := reflect.ValueOf(&data).Elem()
-	if idField := v.FieldByName("ID"); idField.IsValid() && idField.CanSet() {
-		idField.SetInt(int64(id))
+	v := reflect.ValueOf(s.Model.Structure)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
 	}
+	if v.Kind() != reflect.Struct {
+		return data, fmt.Errorf("s.Model no es un struct (es %s)", v.Kind())
+	}
+
+	var field string
+	for i := 0; i < v.NumField(); i++ {
+		structField := v.Type().Field(i)
+		if structField.Tag.Get("type") == "pk" {
+			field = structField.Tag.Get("db")
+			break
+		}
+	}
+	if field == "" {
+		return data, fmt.Errorf("no se encontró ningún campo con el tag 'type:\"pk\"'")
+	}
+
+	fmt.Printf("Actualizando registro con ID: %d usando el campo: %s\n", id, field)
+	// return db.UpdateDocument(filter, data, b.Model.CollectionName) // Implementación real de actualización
+	_, err = s.Model.UpdateByID(context.Background(), id, data, field)
+	// Agregar a la data el ID actualizado con un set
+	v2 := reflect.ValueOf(&data).Elem()
+	setEntityIDByTag(v2, id, "type", "pk")
 	return data, err
 
 }
@@ -76,11 +95,52 @@ func (s *Service[T]) Update(idStr string, data T) (T, error) {
 // Delete: Eliminar datos de la base de datos
 func (s *Service[T]) Delete(idStr string) error {
 	id, err := strconv.Atoi(idStr)
-	fmt.Printf("Eliminando datos de la colección '%s' con el filtro: %v\n", id)
-	// return db.DeleteDocument(filter, b.Model.CollectionName) // Implementación real de eliminación
-	_, err = s.Model.DeleteByID(context.Background(), id)
-	return err
+	if err != nil {
+		// Es bueno manejar el error de conversión aquí
+		return fmt.Errorf("ID inválido '%s': %w", idStr, err)
+	}
 
+	// 1. Obtenemos el reflect.Value
+	v := reflect.ValueOf(s.Model.Structure)
+
+	// 2. [LA MEJORA] Hacemos la lógica robusta
+	// Si 'v' es un puntero (reflect.Ptr), usamos .Elem()
+	// para obtener el struct al que apunta.
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+
+	// 3. Ahora nos aseguramos de que lo que tenemos es un struct
+	if v.Kind() != reflect.Struct {
+		return fmt.Errorf("s.Model no es un struct (es %s)", v.Kind())
+	}
+
+	// 4. Tu lógica de bucle (que ya estaba correcta)
+	var field string
+	for i := 0; i < v.NumField(); i++ {
+		fmt.Printf("Field %d: %s\n", i, v.Type().Field(i).Name)
+		structField := v.Type().Field(i)
+		if structField.Tag.Get("type") == "pk" {
+			// Asumo que quieres el nombre de la columna de la DB
+			field = structField.Tag.Get("db")
+			break
+		}
+	}
+
+	// 5. Es bueno verificar si encontramos el campo
+	if field == "" {
+		return fmt.Errorf("no se encontró ningún campo con el tag 'type:\"pk\"'")
+	}
+
+	// 6. Corrección del Printf:
+	// 'id' es un 'int' (se usa %d), no un string (%s).
+	// También añadí el 'field' que encontramos.
+	fmt.Printf("Eliminando ID: %d usando el campo PK: %s\n", id, field)
+
+	// 7. Ejecutar la eliminación
+	// Esta línea asume que tu tipo T tiene este método.
+	_, err = s.Model.DeleteByID(context.Background(), id, field)
+	return err
 }
 
 func (s *Service[T]) ReadOne(id int) (T, error) {
@@ -88,8 +148,32 @@ func (s *Service[T]) ReadOne(id int) (T, error) {
 	if id == 0 {
 		return *new(T), errors.New("ID cannot be zero")
 	}
+	// Obtener el reflect.Value
+	v := reflect.ValueOf(s.Model.Structure)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+	if v.Kind() != reflect.Struct {
+		return *new(T), errors.New("s.Model is not a struct")
+	}
 
-	data, err := s.Model.Find.Where("ID", "=", id).Exec(context.Background())
+	var field string
+	for i := 0; i < v.NumField(); i++ {
+		structField := v.Type().Field(i)
+		if structField.Tag.Get("type") == "pk" {
+			field = structField.Tag.Get("db")
+			break
+		}
+	}
+	if field == "" {
+		return *new(T), errors.New("no field with tag 'type:\"pk\"' found")
+	}
+
+	fmt.Printf("Reading one record with ID: %d using field: %s\n", id, field)
+
+	// Construir el query para buscar por el campo PK
+
+	data, err := s.Model.Find.Where(field, "=", id).Exec(context.Background())
 	if err != nil {
 		return *new(T), err
 	}
@@ -122,4 +206,56 @@ func Sanitizar[S any, E any](data E) (S, error) {
 
 	// Retornar los datos sanitizados y sin errores
 	return sanitized, nil
+}
+
+func setEntityIDByTag(v reflect.Value, id int, tagName string, tagValue string) bool {
+	// 1. Nos aseguramos de que 'v' sea un struct.
+	fmt.Printf("Setting entity ID by tag '%s:%s' to %d", tagName, tagValue, id)
+	if v.Kind() != reflect.Struct {
+		return false
+	}
+
+	// 2. Iteramos sobre todos los campos del struct.
+	for i := 0; i < v.NumField(); i++ {
+
+		// 3. Obtenemos la especificación del campo (para leer el tag).
+		// v.Type() nos da el "molde" del struct.
+		fieldSpec := v.Type().Field(i)
+
+		// 4. Leemos el tag específico.
+		tag := fieldSpec.Tag.Get(tagName)
+
+		// 5. ¡Comprobación! Verificamos si es el tag que buscamos.
+		if tag == tagValue {
+
+			// 6. Obtenemos el valor de ese campo (para modificarlo).
+			fieldValue := v.Field(i)
+
+			// 7. Verificamos que se pueda modificar.
+			if !fieldValue.IsValid() || !fieldValue.CanSet() {
+				continue // No se puede, probemos el siguiente (aunque PK suele ser única)
+			}
+
+			// 8. Usamos la misma lógica de antes para asignar el valor.
+			switch fieldValue.Kind() {
+			case reflect.Int:
+				fieldValue.SetInt(int64(id))
+				return true // ¡Éxito!
+			case reflect.Ptr:
+				if fieldValue.Type().Elem().Kind() == reflect.Int {
+					newID := reflect.New(fieldValue.Type().Elem())
+					newID.Elem().SetInt(int64(id))
+					fieldValue.Set(newID)
+					return true // ¡Éxito!
+				}
+			}
+
+			// Si encontramos el tag "pk" pero el tipo no era int o *int
+			// (ej. era un string), la asignación falla y retornamos false.
+			return false
+		}
+	}
+
+	// 9. Si el bucle termina, no se encontró ningún campo con ese tag.
+	return false
 }
