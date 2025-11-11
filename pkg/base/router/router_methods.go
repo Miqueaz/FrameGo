@@ -12,7 +12,7 @@ import (
 func Router() *AppRouter {
 	// Usamos gin.Default() para crear el enrutador con middleware por defecto (como el logger y recovery)
 	gin.SetMode(gin.ReleaseMode)
-	r := gin.Default()
+	r := gin.New()
 	r.NoRoute(func(c *gin.Context) {
 		client.NotFound(c, errors.New("Route not found"))
 	})
