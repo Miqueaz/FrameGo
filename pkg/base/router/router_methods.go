@@ -10,7 +10,7 @@ import (
 )
 
 func Router() *AppRouter {
-	// Usamos gin.Default() para crear el enrutador con middleware por defecto (como el logger y recovery)
+	// Usamos gin.Default() para crear el enrutador con middleware por defecto (como el logger y recovery
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 	r.NoRoute(func(c *gin.Context) {
